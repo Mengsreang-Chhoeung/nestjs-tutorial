@@ -97,6 +97,127 @@ To install the JavaScript flavor of the starter project, use `javascript-starter
 
 [🔼 Back to top](#nestjs-tutorial)
 
+## Controllers
+
+Controllers are responsible for handling incomming **requests** and returning **responses** to the client.
+
+<img src="./doc-images/controllers.jpeg" width="100%" alt="controllers">
+
+A controller's purpose is to receive specific requests for the application. The **routing** mechanism controls which controller receives which requests. Frequently, each controller has more than one route, and different routes can perform different actions.
+
+In order to create a basic controller, we use classes and **decorators**. Decorators associate classes with required metadata and enable Nest to create a routing map (tie requests to the corresponding controllers).
+
+### Routing
+
+In the following example we'll use the `@Controller()` decorator, which is **required** to define a basic controller. We'll specify an optional route path prefix of `cats`. Using a path prefix in a `@Controller()` decorator allows us to easily group a set of related routes, and minimize repetitive code. For example, we may choose to group a set of routes that manage interactions with a cat entity under the route `/cats`. In that case, we could specify the path prefix `cats` in the `@Controller()` decorator so that we don't have to repeat that portion of the path for each route in the file.
+
+```ts
+cats.controller.ts;
+
+import { Controller, Get } from "@nestjs/common";
+
+@Controller("cats")
+export class CatsController {
+  @Get()
+  findAll(): string {
+    return "This action returns all cats";
+  }
+}
+```
+
+> To create a controller using the CLI, simply execute the `$ nest g controller cats` command.
+
+The `@Get()` HTTP request method decorator before the `findAll()` method tells Nest to create a handler for a specific endpoint for HTTP requests. The endpoint corresponds to the HTTP request method (GET in this case) and the route path. What is the route path? The route path for a handler is determined by concatenating the (optional) prefix declared for the controller, and any path specified in the method's decorator. Since we've declared a prefix for every route (`cats`), and haven't added any path information in the decorator, Nest will map `GET /cats` requests to this handler. As mentioned, the path includes both the optional controller path prefix **and** any path string declared in the request method decorator `@Get('breed')` would produce a route mapping for requests like `GET /cats/breed`.
+
+This method will return a 200 status code and the associated response, which in this case is just a string. Why does that happen? To explain, we'll first introduce the concept that Nest employs two **different** options for maniplulating responses:
+
+- Using this built-in method, when a request handler returns a JavaScript object or array, it will **automatically** be serialized to JSON. When if returns a JavaScript primitive type(e.g., `string`, `number`, `boolean`), however, Nest will send just the value without attempting to serialize it. This makes response handling simple: just return the value, and Nest takes care of the rest.
+
+  Futhermore, the response's **status code** is always 200 by default, except for POST requests which use 201. We can easily change this behavior by adding the `@HttpCode(...)` decorator at a handler-level.
+
+### Request object
+
+Handlers often need access to the client **request** details. Nest provides access to the [**request object**](https://expressjs.com/en/api.html#req) of the underlying platform (Express by default). We can access the request object by instructing Nest to inject it by adding the `@Req()` decorator to the handler's signature.
+
+```ts
+cats.controller.ts;
+
+import { Controller, Get, Req } from "@nestjs/common";
+import { Request } from "express";
+
+@Controller("cats")
+export class CatsController {
+  @Get()
+  findAll(@Req() request: Request): string {
+    return "This action returns all cats";
+  }
+}
+```
+
+> In order to take advantage of `express` typings (as in the `request: Request` parameter example above), install `@types/express` package.
+
+The request object represents the HTTP request and has properties for the request query stirng, parameters, HTTP handlers, and body (read more [**here**](https://expressjs.com/en/api.html#req)). In most cases, it's not nessary to grab these properties manually. We can use dedicated decorators instead, such as `@Body()` or `@Query()`, which are available out of the box. Below is a list of the provided decorators and the plain platform-specific objects they represent.
+
+<img src="./doc-images/controllers-request-object.jpeg" width="100%" alt="controllers">
+
+For compatibility with typings across underlying HTTP platforms (e.g., Express and Fastify), Nest provides `@Res()` and `@Response()` decorators. `@Res()` is simply an alias for `@Response()`. Both directly expose the underlying native platform `response` object interface. When using them, you should also import the typings for the underlying library (e.g., `@types/express`) to take full advantage. Note that when you inject either `@Res()` or `@Response()` in a method handler, you become responsible for managing the response. When doing so, you must issue some kind of response by making a call on the `response` object (e.g., `res.json(...)` or `res.send(...)`), or the HTTP server will hang.
+
+### Resources
+
+Earlier, we defined an endpoint to fetch the cats resource(**GET** route). We'll typically also want to provide an endpoint that creates new records. Fot this, let's create the **POST** handler:
+
+```ts
+cats.controller.ts;
+
+import { Controller, Get, Post } from "@nestjs/common";
+
+@Controller("cats")
+export class CatsController {
+  @Post()
+  create(): string {
+    return "This action adds a new cat";
+  }
+
+  @Get()
+  findAll(): string {
+    return "This action returns all cats";
+  }
+}
+```
+
+It's that simple. Nest provides decorators for all of the standard HTTP methods: `@Get()`, `@Post()`, `@Put()`, `@Delete()`, `@Patch()`, `@Options()`, and `@Head()`. In addition, `@All()` defines an endpoint that handles all of them.
+
+### Route wildcards
+
+Pattern based routes are supported as well. For instance, the asterisk is used as a wildcard, and will match any combination of characters.
+
+```ts
+@Get('ab*cd')
+findAll() {
+  return 'This route uses a wildcard';
+}
+```
+
+The `ab*cd` route path will match `abcd`, `ab_cd`, `abecd`, and so on. The character `?`, `+`, `*`, and `()` may be used in a route path, and are subsets of their regular expression counterparts. The hyphen (`-`) and the dot(`.`) are interpreted literally by string-based paths.
+
+### Status code
+
+As mentioned, the response **status code** is always **200** by default, except for POST requests which are **201**. We can easily change this behavior by adding the `@HttpCode(...)` decorator at a handler level.
+
+```ts
+@Post()
+@HttpCode(204)
+create() {
+  return 'This action adds a new cat';
+}
+```
+
+> Import `HttpCode` from the `@nestjs/common` package.
+
+Often, your status code isn't static but depends on various factors. In that case, you can use a library-specific **response** (inject using `@Res()`) object (or, in case of an error, throw an exception).
+
+[🔼 Back to top](#nestjs-tutorial)
+
 ### 📜 References
 
 - [Nestjs Documentation](https://docs.nestjs.com)
