@@ -27,6 +27,53 @@ $ nest new project-name
 
 > To create a new project with TypeScript's `strict` mode enabled, pass the `--strict` flag to the `nest new` command.
 
+The `project-name` directory will be created, node modules and a few other boilerplate files will be installed, and a `src/` directory will be created and populated with several core files.
+
+<img src="./doc-images/project-structure.jpeg" width="100%" alt="project-structure">
+
+Here's a brief overview of those core files:
+
+- `app.controller.ts`: A basic controller witha single route.
+- `app.controller.spec.ts`: The unit tests for the controller.
+- `app.module.ts`: The root module of the application.
+- `app.service.ts`: A basic service with a single method.
+- `main.ts`: The entry file of the application which uses the core function `NestFactory` to create a Nest application instance.
+
+The `main.ts` includes an async function, which will **bootstrap** our application:
+
+```ts
+main.ts;
+
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+To create a Nest application instance, we use the core `NestFactory` class. `NestFactory` exposes a few static methods that allow creating an application instance. The `create()` method returns an application object, which fulfills the `INestApplication` interface. This object provides a set of methods which are described in the coming chapters. In the `main.ts` example above, we simply start up our HTTP listener, which lets the application await inbound HTTP requests.
+
+### Running the application
+
+Once the installation process is complete, you can run the follwing command at your OS command prompt to start the application listening for inbound HTTP requests:
+
+```shell
+$ npm run start
+```
+
+This command starts the app with the HTTP server listening on the port defined in the `src/main.ts` file. Once the application is running, open your browser and navigate to `http://localhost:3000/`. You should see the `Hello World!` message.
+
+To watch for changes in your files, you can run the following command to start the application:
+
+```shell
+$ npm run start:dev
+```
+
+This command will watch your files, automatically recompiling and reloading the server.
+
 ### Alternatives
 
 Alternatively, to install the TypeScript starter project with Git:
