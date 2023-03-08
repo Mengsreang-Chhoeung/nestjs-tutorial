@@ -4,7 +4,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
-<p align="center"><i>A progressive <a href="http://nodejs.org">Node.js</a> framework for building efficient, reliable and scalable server-side applications.</i></p>
+<p align="center"><i>A progressive <b><a href="http://nodejs.org">Node.js</a></b> framework for building efficient, reliable and scalable server-side applications.</i></p>
 
 ## Introduction
 
