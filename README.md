@@ -42,8 +42,7 @@ Here's a brief overview of those core files:
 The `main.ts` includes an async function, which will **bootstrap** our application:
 
 ```ts
-main.ts;
-
+// main.ts
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 
@@ -112,8 +111,7 @@ In order to create a basic controller, we use classes and **decorators**. Decora
 In the following example we'll use the `@Controller()` decorator, which is **required** to define a basic controller. We'll specify an optional route path prefix of `cats`. Using a path prefix in a `@Controller()` decorator allows us to easily group a set of related routes, and minimize repetitive code. For example, we may choose to group a set of routes that manage interactions with a cat entity under the route `/cats`. In that case, we could specify the path prefix `cats` in the `@Controller()` decorator so that we don't have to repeat that portion of the path for each route in the file.
 
 ```ts
-cats.controller.ts;
-
+// cats.controller.ts;
 import { Controller, Get } from "@nestjs/common";
 
 @Controller("cats")
@@ -140,8 +138,7 @@ This method will return a 200 status code and the associated response, which in 
 Handlers often need access to the client **request** details. Nest provides access to the [**request object**](https://expressjs.com/en/api.html#req) of the underlying platform (Express by default). We can access the request object by instructing Nest to inject it by adding the `@Req()` decorator to the handler's signature.
 
 ```ts
-cats.controller.ts;
-
+// cats.controller.ts;
 import { Controller, Get, Req } from "@nestjs/common";
 import { Request } from "express";
 
@@ -167,8 +164,7 @@ For compatibility with typings across underlying HTTP platforms (e.g., Express a
 Earlier, we defined an endpoint to fetch the cats resource(**GET** route). We'll typically also want to provide an endpoint that creates new records. Fot this, let's create the **POST** handler:
 
 ```ts
-cats.controller.ts;
-
+// cats.controller.ts;
 import { Controller, Get, Post } from "@nestjs/common";
 
 @Controller("cats")
